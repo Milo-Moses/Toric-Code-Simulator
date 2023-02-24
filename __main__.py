@@ -1,39 +1,37 @@
 import matplotlib.pyplot as plt
 import numpy as np
 from Torus import Torus
+import csv
+import time
 
-S = Torus(subdivisions=2)
 
-S.makeHamiltonian()
+T = Torus(subdivisions=3)
 
-S.makeEigenstates()
+T.makeHamiltonian()
 
-dataMinus8=[S.eigenstates[i] for i in range(256) if S.eigenvalues[i]==-8]
-dataMinus4=[S.eigenstates[i] for i in range(256) if S.eigenvalues[i]==-4]
-data0=[S.eigenstates[i] for i in range(256) if S.eigenvalues[i]==0]
-data4=[S.eigenstates[i] for i in range(256) if S.eigenvalues[i]==4]
-data8=[S.eigenstates[i] for i in range(256) if S.eigenvalues[i]==8]
+print("Here we go!")
 
-valsMinus8=[S.compute_Q_ptrace(data) for data in dataMinus8]
-valsMinus4=[S.compute_Q_ptrace(data) for data in dataMinus4]
-vals0=[S.compute_Q_ptrace(data) for data in data0]
-vals4=[S.compute_Q_ptrace(data) for data in data4]
-vals8=[S.compute_Q_ptrace(data) for data in data8]
+t0=time.time()
 
-plt.plot(vals8, np.zeros_like(vals8)+8, 'x',label="Eigenvalue 8")
-plt.plot(vals4, np.zeros_like(vals4)+4, 'x',label="Eigenvalue 4")
-plt.plot(vals0, np.zeros_like(vals0), 'x',label="Eigenvalue 0")
-plt.plot(valsMinus4, np.zeros_like(valsMinus4)-4, 'x',label="Eigenvalue -4")
-plt.plot(valsMinus8, np.zeros_like(valsMinus8)-8, 'x',label="Eigenvalue -8")
-plt.legend()
-plt.show()
+T.makeSparseEigenstates(k=3)
 
-print(len(dataMinus8))
+t1=time.time()
 
-print(len(dataMinus4))
+print("Task Successful!")
+print("Time elapsed: "+str(t1-t0))
 
-print(len(data0))
+T.makeMWEigendata()
 
-print(len(data4))
+T.plotEigendata()
 
-print(len(data8))
+T.saveEigenData("Surface_Codes/CSVs/eigenvalues1.csv",
+                "Surface_Codes/CSVs/eigenMW1.csv",
+                "Surface_Codes/CSVs/eigenstates1.csv")
+
+"""
+T.loadEigenData("Surface_Codes/CSVs/eigenvalues1.csv",
+                "Surface_Codes/CSVs/eigenMW1.csv",
+                "Surface_Codes/CSVs/eigenstates1.csv")
+
+T.plotEigendata()
+"""
