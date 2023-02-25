@@ -7,7 +7,14 @@ import time
 
 T = Torus()
 
+T.loadEigenData("Toric-Codes-Simulator/CSVs/groundEigenvalues.csv",
+                "Toric-Codes-Simulator/CSVs/groundEigenMW.csv",
+                "Toric-Codes-Simulator/CSVs/groundEigenstates.csv")
 
+
+T.printState(T.eigenstates[0])
+
+"""
 T.makeHamiltonian()
 
 
@@ -24,28 +31,9 @@ print("Time elapsed: "+str(t1-t0))
 
 T.makeMWEigendata()
 
-T.plotEigendata()
 
-T.saveEigenData("Surface_Codes/CSVs/eigenvalues1.csv",
-                "Surface_Codes/CSVs/eigenMW1.csv",
-                "Surface_Codes/CSVs/eigenstates1.csv")
+T.saveEigenData("Toric-Codes-Simulator/CSVs/eigenvalues1.csv",
+                "Toric-Codes-Simulator/CSVs/eigenMW1.csv",
+                "Toric-Codes-Simulator/CSVs/eigenstates1.csv")
 """
 
-T.loadEigenData("Surface_Codes/CSVs/eigenvalues1.csv",
-                "Surface_Codes/CSVs/eigenMW1.csv",
-                "Surface_Codes/CSVs/eigenstates1.csv")
-
-values={}
-
-for item in T.eigenstates:
-
-    if item in values:
-        values[item]+=1
-    
-    else:
-        values[item]=1
-
-for item in values:
-    print(str(item)+": "+str(values[item]))
-
-"""

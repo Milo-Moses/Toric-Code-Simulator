@@ -120,6 +120,40 @@ class Torus:
         
         return PauliSumOp(SparsePauliOp([indicies],[1]))
 
+    #Get the operator corresponding to a homology class
+    def homologyOperator(self,homology):
+
+        indicies=""
+
+        if homology=="id":
+            Xs=[]
+
+        if homology=="alpha":
+            Xs=[self.makeHash([(2,0),(2,1)]),
+                self.makeHash([(2,1),(2,2)]),
+                self.makeHash([(2,2),(2,0)])]
+        
+        if homology=="beta":
+            Xs=[self.makeHash([(0,2),(1,2)]),
+                self.makeHash([(1,2),(2,2)]),
+                self.makeHash([(2,2),(0,2)])]
+
+        if homology=="alphabeta":
+            Xs=[self.makeHash([(2,0),(2,1)]),
+                self.makeHash([(2,1),(2,2)]),
+                self.makeHash([(2,2),(2,0)]),
+                self.makeHash([(0,2),(1,2)]),
+                self.makeHash([(1,2),(2,2)]),
+                self.makeHash([(2,2),(0,2)])]
+            
+        for edge in self.edges:
+            if edge in Xs:
+                indicies+="X"
+            else:
+                indicies+="I"
+        
+        return PauliSumOp(SparsePauliOp([indicies],[1]))
+
     #Make the hamiltonian of the torus, stored in self.hamiltonian
     def makeHamiltonian(self):
 
@@ -139,7 +173,7 @@ class Torus:
         data=np.linalg.eig(mat)
 
         self.eigenvalues=np.round(data[0])
-        self.eigenstates=np.around(np.transpose(data[1]),6)
+        self.eigenstates=np.transpose(data[1])
   
     #Get the first k eigenstates and eigenvalues, stored in self.eigenvalues and self.eigenstates
     def makeSparseEigenstatesNaive(self,k):
@@ -149,7 +183,7 @@ class Torus:
         data=eigs(mat,k=k)
 
         self.eigenvalues=np.round(data[0])
-        self.eigenstates=np.around(np.transpose(data[1]),6)
+        self.eigenstates=np.transpose(data[1])
 
     #Compute the Mayer-Wallash entropy of a state ket
     def MW(self,ket):
@@ -161,7 +195,7 @@ class Torus:
             entanglement_sum += rho_k_sq.tr()  
     
         Q = 2*(1 - (1/N)*entanglement_sum)
-        return np.around(Q,6)
+        return Q
 
     #Compute the Mayer-Wallash entropy of all the eigenstates
     def makeMWEigendata(self):
@@ -170,6 +204,19 @@ class Torus:
         for eigenstate in self.eigenstates:
             self.eigenMW+=[self.MW(eigenstate)]
     
+    #Present a state vector in a reasonable format
+    def printState(self,ket):
+        L=int(np.log2(len(ket)))
+        readable={}
+
+        for pureState in range(len(ket)):
+            if ket[pureState]!=0:
+                zeros = "0"*(L-len(bin(pureState)[2:]))
+                readable[zeros+bin(pureState)[2:]]=ket[pureState]
+
+        for item in readable:
+            print(item+": "+str(readable[item]))
+
     #Plot data
     def plotEigendata(self):
     
@@ -227,6 +274,6 @@ class Torus:
             reader = csv.reader(f)
 
             for eigenstate in reader:
-                self.eigenstates+=[complex(eigenstate[i]) for i in range(len(eigenstate))]
+                self.eigenstates+=[[complex(eigenstate[i]) for i in range(len(eigenstate))]]
         
 
