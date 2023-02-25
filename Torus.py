@@ -101,7 +101,7 @@ class Torus:
 
         for edge in self.edges:
             if edge in self.vertexNeighbors(vertex):
-                indicies+="X"
+                indicies+="Z"
             else:
                 indicies+="I"
         
@@ -114,7 +114,7 @@ class Torus:
 
         for edge in self.edges:
             if edge in self.faceNeighbors(face):
-                indicies+="Y"
+                indicies+="X"
             else:
                 indicies+="I"
         
@@ -132,24 +132,24 @@ class Torus:
             self.hamiltonian=self.hamiltonian-self.B(face)
     
     #Get the eigenstates and eigenvalues, stored in self.eigenvalues and self.eigenstates
-    def makeEigenstates(self):
+    def makeEigenstatesNaive(self):
 
         mat=self.hamiltonian.to_matrix()
 
         data=np.linalg.eig(mat)
 
         self.eigenvalues=np.round(data[0])
-        self.eigenstates=np.transpose(data[1])
+        self.eigenstates=np.around(np.transpose(data[1]),6)
   
     #Get the first k eigenstates and eigenvalues, stored in self.eigenvalues and self.eigenstates
-    def makeSparseEigenstates(self,k):
+    def makeSparseEigenstatesNaive(self,k):
 
         mat=self.hamiltonian.to_spmatrix()
 
         data=eigs(mat,k=k)
 
         self.eigenvalues=np.round(data[0])
-        self.eigenstates=np.transpose(data[1])
+        self.eigenstates=np.around(np.transpose(data[1]),6)
 
     #Compute the Mayer-Wallash entropy of a state ket
     def MW(self,ket):
@@ -161,7 +161,7 @@ class Torus:
             entanglement_sum += rho_k_sq.tr()  
     
         Q = 2*(1 - (1/N)*entanglement_sum)
-        return Q
+        return np.around(Q,6)
 
     #Compute the Mayer-Wallash entropy of all the eigenstates
     def makeMWEigendata(self):
@@ -175,7 +175,7 @@ class Torus:
     
         for eigenval in sorted(list(set(self.eigenvalues)),reverse=True):
             data=[self.eigenMW[i] for i in range(len(self.eigenvalues)) if self.eigenvalues[i]==eigenval]
-
+            print(str(eigenval)+": "+str(len(data)))
             plt.plot(data, np.zeros_like(data)+eigenval, 'x',label="Eigenvalue "+str(int(eigenval)))
         
         plt.legend()
@@ -227,6 +227,6 @@ class Torus:
             reader = csv.reader(f)
 
             for eigenstate in reader:
-                self.eigenMW+=[complex(eigenstate[i]) for i in range(len(eigenstate))]
+                self.eigenstates+=[complex(eigenstate[i]) for i in range(len(eigenstate))]
         
 

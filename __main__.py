@@ -5,15 +5,17 @@ import csv
 import time
 
 
-T = Torus(subdivisions=3)
+T = Torus()
+
 
 T.makeHamiltonian()
+
 
 print("Here we go!")
 
 t0=time.time()
 
-T.makeSparseEigenstates(k=3)
+T.makeSparseEigenstatesNaive(k=1)
 
 t1=time.time()
 
@@ -27,11 +29,23 @@ T.plotEigendata()
 T.saveEigenData("Surface_Codes/CSVs/eigenvalues1.csv",
                 "Surface_Codes/CSVs/eigenMW1.csv",
                 "Surface_Codes/CSVs/eigenstates1.csv")
-
 """
+
 T.loadEigenData("Surface_Codes/CSVs/eigenvalues1.csv",
                 "Surface_Codes/CSVs/eigenMW1.csv",
                 "Surface_Codes/CSVs/eigenstates1.csv")
 
-T.plotEigendata()
+values={}
+
+for item in T.eigenstates:
+
+    if item in values:
+        values[item]+=1
+    
+    else:
+        values[item]=1
+
+for item in values:
+    print(str(item)+": "+str(values[item]))
+
 """
