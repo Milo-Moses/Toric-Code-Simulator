@@ -196,14 +196,45 @@ class Torus:
     
         Q = 2*(1 - (1/N)*entanglement_sum)
         return Q
-
-    #Compute the Mayer-Wallash entropy of all the eigenstates
-    def makeMWEigendata(self):
-        self.eigenMW=[]
-
-        for eigenstate in self.eigenstates:
-            self.eigenMW+=[self.MW(eigenstate)]
     
+    #Print a (pure) state vector in a reasonable format
+    def printPureState(self,ket):
+        pretty=""
+        pretty+=" __A__  __B__ __C__"+"\n"
+        pretty+="|     |      |      |"+"\n"
+        pretty+="D     E      F      D"+"\n"
+        pretty+="|     |      |      |"+"\n"
+        pretty+=" __G__ __H__   __I__"+"\n"
+        pretty+="|     |      |      |"+"\n"
+        pretty+="J     K      L      J"+"\n"
+        pretty+="|     |      |      |"+"\n"
+        pretty+=" __M__ __N__   __O__"+"\n"
+        pretty+="|     |      |      |"+"\n"
+        pretty+="P     Q      R      P"+"\n"
+        pretty+="|     |      |      |"+"\n"
+        pretty+=" __A__ __B__   __C__"
+
+        pretty=pretty.replace("P",str(ket[0]))
+        pretty=pretty.replace("Q",str(ket[1]))
+        pretty=pretty.replace("R",str(ket[2]))
+        pretty=pretty.replace("J",str(ket[3]))
+        pretty=pretty.replace("K",str(ket[4]))
+        pretty=pretty.replace("L",str(ket[5]))
+        pretty=pretty.replace("D",str(ket[6]))
+        pretty=pretty.replace("E",str(ket[7]))
+        pretty=pretty.replace("F",str(ket[8]))
+        pretty=pretty.replace("A",str(ket[9]))
+        pretty=pretty.replace("B",str(ket[10]))
+        pretty=pretty.replace("C",str(ket[11]))
+        pretty=pretty.replace("M",str(ket[12]))
+        pretty=pretty.replace("N",str(ket[13]))
+        pretty=pretty.replace("O",str(ket[14]))
+        pretty=pretty.replace("G",str(ket[15]))
+        pretty=pretty.replace("H",str(ket[16]))
+        pretty=pretty.replace("I",str(ket[17]))
+
+        print(pretty)
+
     #Present a state vector in a reasonable format
     def printState(self,ket):
         L=int(np.log2(len(ket)))
@@ -215,8 +246,19 @@ class Torus:
                 readable[zeros+bin(pureState)[2:]]=ket[pureState]
 
         for item in readable:
-            print(item+": "+str(readable[item]))
+            self.printPureState(item)
+            print(readable[item])
 
+    #Get the values and multiplicities of a vector
+    def getVals(self,ket):
+        values={}
+        for val in ket:
+            if val not in values:
+                values[val]=1
+            else:
+                values[val]+=1
+        return values
+    
     #Plot data
     def plotEigendata(self):
     
@@ -229,7 +271,7 @@ class Torus:
         plt.show()
 
     #Save data
-    def saveEigenData(self, eigenvalueCSV, eigenMWCSV, eigenstateCSV):
+    def saveEigenData(self, eigenvalueCSV, eigenstateCSV):
 
         with open(eigenvalueCSV,"w") as f:
 
@@ -237,13 +279,6 @@ class Torus:
 
             for eigenvalue in self.eigenvalues:
                 writer.writerow([eigenvalue])
-
-        with open(eigenMWCSV,"w") as f:
-
-            writer = csv.writer(f)
-
-            for MW in self.eigenMW:
-                writer.writerow([MW])
 
         with open(eigenstateCSV,"w") as f:
 
@@ -253,7 +288,7 @@ class Torus:
                 writer.writerow(eigenstate)
         
     #Load data
-    def loadEigenData(self, eigenvalueCSV, eigenMWCSV,eigenstateCSV):
+    def loadEigenData(self, eigenvalueCSV,eigenstateCSV):
 
         with open(eigenvalueCSV,"r") as f:
 
@@ -261,13 +296,6 @@ class Torus:
 
             for eigenvalue in reader:
                 self.eigenvalues+=[int(np.real(complex(eigenvalue[0])))]
-
-        with open(eigenMWCSV,"r") as f:
-
-            reader = csv.reader(f)
-
-            for MW in reader:
-                self.eigenMW+=[float(MW[0])]
 
         with open(eigenstateCSV,"r") as f:
 

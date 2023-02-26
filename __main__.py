@@ -8,11 +8,10 @@ import time
 T = Torus()
 
 T.loadEigenData("Toric-Codes-Simulator/CSVs/groundEigenvalues.csv",
-                "Toric-Codes-Simulator/CSVs/groundEigenMW.csv",
                 "Toric-Codes-Simulator/CSVs/groundEigenstates.csv")
 
 
-T.printState(T.eigenstates[0])
+T.printState(T.eigenstates[1])
 
 """
 T.makeHamiltonian()
@@ -33,7 +32,6 @@ T.makeMWEigendata()
 
 
 T.saveEigenData("Toric-Codes-Simulator/CSVs/eigenvalues1.csv",
-                "Toric-Codes-Simulator/CSVs/eigenMW1.csv",
                 "Toric-Codes-Simulator/CSVs/eigenstates1.csv")
 """
 
