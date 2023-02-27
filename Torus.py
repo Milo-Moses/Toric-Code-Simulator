@@ -121,7 +121,7 @@ class Torus:
         return PauliSumOp(SparsePauliOp([indicies],[1]))
 
     #Get the operator corresponding to a homology class
-    def homologyOperator(self,homology):
+    def homologyXOperator(self,homology):
 
         indicies=""
 
@@ -153,6 +153,41 @@ class Torus:
                 indicies+="I"
         
         return PauliSumOp(SparsePauliOp([indicies],[1]))
+
+    #Get the operator corresponding to a homology class
+    def homologyZOperator(self,homology):
+
+        indicies=""
+
+        if homology=="id":
+            Zs=[]
+
+        if homology=="alpha":
+            Zs=[self.makeHash([(1,0),(2,0)]),
+                self.makeHash([(1,1),(2,1)]),
+                self.makeHash([(1,2),(2,2)])]
+        
+        if homology=="beta":
+            Zs=[self.makeHash([(0,1),(0,2)]),
+                self.makeHash([(1,1),(1,2)]),
+                self.makeHash([(2,1),(2,2)])]
+
+        if homology=="alphabeta":
+            Zs=[self.makeHash([(1,0),(2,0)]),
+                self.makeHash([(1,1),(2,1)]),
+                self.makeHash([(1,2),(2,2)]),
+                self.makeHash([(0,1),(0,2)]),
+                self.makeHash([(1,1),(1,2)]),
+                self.makeHash([(2,1),(2,2)])]
+            
+        for edge in self.edges:
+            if edge in Zs:
+                indicies+="Z"
+            else:
+                indicies+="I"
+        
+        return PauliSumOp(SparsePauliOp([indicies],[1]))
+    
 
     #Make the hamiltonian of the torus, stored in self.hamiltonian
     def makeHamiltonian(self):
