@@ -2,7 +2,7 @@
 
 This project serves to give a simple introduction to the toric code as topological quantum computing, as well as to give a programmatic environment in which to play with the code.
 
-The bulk of the work on this project is mathematical. The literature on topological quantum computing can be very daunting, and sometimes it can be difficult to get what the big ideas are. The majority of time spent on this project was spent digesting all of that knowledge into a beginner-friendly format. Additionally, proofs to folklore and implicitly assumed elementary results are formalized. The mathematical write up for the project can be found in the LaTeX Write Up folder.
+The bulk of the work on this project is mathematical. The literature on topological quantum computing can be very daunting, and sometimes it can be difficult to get what the big ideas are. The majority of time spent on this project was spent digesting all of that knowledge into a beginner-friendly format. Additionally, proofs to folklore and implicitly assumed elementary results are formalized. The mathematical write up for the project can be found in the LaTeX Write Up file.
 
 The programmatic implementation of the toric code is in Torus.py. While the final result is trivial, it was a huge task to try to find the correct way to implement the gates. Seeing as even small (in this case, 18) qubit systems take a large amount of memory to store in classical computers, it took several tries to get the right format. We settled on using Qiskit. Despite not using the main QuantumCircuit feature of QisKit, we refer to it here as simply a powerful linear algebra package.
 
