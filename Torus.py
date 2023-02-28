@@ -2,17 +2,8 @@
 import numpy as np
 import csv
 
-
-from qiskit import QuantumCircuit, ClassicalRegister, QuantumRegister,BasicAer
-from qiskit.compiler import transpile
-from qiskit.quantum_info.operators import Operator, Pauli
-from qiskit.quantum_info import process_fidelity
-from qiskit.extensions import RXGate, XGate, CXGate
 from qiskit.opflow.primitive_ops import PauliSumOp
-from qiskit.circuit import ParameterVector
 from qiskit.quantum_info import SparsePauliOp
-from scipy.sparse.linalg import eigs
-import matplotlib.pyplot as plt
 
 
 #Main "Torus" class
@@ -46,15 +37,9 @@ class Torus:
             for j in range(self.N)
         ]
 
-        #The internal state of our Torus, index by edges via edgesDict
-        self.state = QuantumCircuit(0)
-
-        for edge in self.edges:
-            self.state.add_register(QuantumRegister(1,edge))
-
         self.makeHamiltonian()
 
-        self.loadEigenData("CSVs/groundEigenstates.csv")
+        self.loadEigenData("groundEigenstates.csv")
 
     #Get the neighboring edges of a vertex        
     def vertexNeighbors(self,vertex):
@@ -160,7 +145,7 @@ class Torus:
         
         return PauliSumOp(SparsePauliOp([indicies],[1]))
 
-    #Get the operator corresponding to a homology class
+    #Get the (X) operator corresponding to a homology class
     def homologyXOperator(self,homology):
 
         indicies=""
@@ -194,7 +179,7 @@ class Torus:
         
         return PauliSumOp(SparsePauliOp([indicies],[1]))
 
-    #Get the operator corresponding to a homology class
+    #Get the (Z) operator corresponding to a homology class
     def homologyZOperator(self,homology):
 
         indicies=""
