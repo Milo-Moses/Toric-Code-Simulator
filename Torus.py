@@ -1,6 +1,5 @@
 #Imports
 import numpy as np
-import qutip
 import csv
 
 
@@ -19,11 +18,9 @@ import matplotlib.pyplot as plt
 #Main "Torus" class
 class Torus:
     #Initialize the Torus
-    def __init__(self,subdivisions=3,eigenstates=[]):
+    def __init__(self,subdivisions=3):
         
         self.N = subdivisions
-
-        self.eigenstates=eigenstates
 
         self.verticies = [
             self.makeHash([(i,j)])
@@ -57,8 +54,7 @@ class Torus:
 
         self.makeHamiltonian()
 
-        self.loadEigenData("CSVs/groundEigenvalues.csv",
-                "CSVs/groundEigenstates.csv")
+        self.loadEigenData("CSVs/groundEigenstates.csv")
 
     #Get the neighboring edges of a vertex        
     def vertexNeighbors(self,vertex):
@@ -82,21 +78,61 @@ class Torus:
         return neighbors
     
     #Hash a tuple (i,j) into a hashable item for edgesDict
-    def makeHash(self,tuples):
+    def makeHash(self,tuples,hashed=False):
+
+        reducedTuple=[(pair[0]%self.N,pair[1]%self.N) for pair in tuples]
+
+        reducedTuple=sorted(reducedTuple)
+
         hashed=""
     
-        for pair in tuples:
-            hashed+=str(pair[0]%self.N)
+        for pair in reducedTuple:
+            hashed+=str(pair[0])
             hashed+="."
-            hashed+=str(pair[1]%self.N)
+            hashed+=str(pair[1])
             hashed+=" "
         
         hashed=hashed[:-1]
 
         return hashed
 
-    #Get the matrix for applying Pauli(X) to neighbors of a vertex         
-    def A(self,vertex):
+    #Apply Pauli(X) to an edge      
+    def X(self,edge0,hashed=False):
+
+        if not hashed:
+            edge0=self.makeHash(edge0)
+
+        indicies=""
+
+        for edge in self.edges:
+            if edge==edge0:
+                indicies+="X"
+            else:
+                indicies+="I"
+        
+        return PauliSumOp(SparsePauliOp([indicies],[1]))
+
+    #Apply Pauli(Z) to an edge      
+    def Z(self,edge0,hashed=False):
+
+        if not hashed:
+            edge0=self.makeHash(edge0)
+
+        indicies=""
+
+        for edge in self.edges:
+            if edge==edge0:
+                indicies+="Z"
+            else:
+                indicies+="I"
+        
+        return PauliSumOp(SparsePauliOp([indicies],[1]))
+    
+    #Get the matrix for applying Pauli(Z) to neighbors of a vertex         
+    def A(self,vertex,hashed=False):
+
+        if not hashed:
+            vertex=self.makeHash(vertex)
 
         indicies=""
 
@@ -108,8 +144,11 @@ class Torus:
         
         return PauliSumOp(SparsePauliOp([indicies],[1]))
 
-    #Get the matrix for applying Pauli(Y) to neighbors of a face
-    def B(self,face):
+    #Get the matrix for applying Pauli(X) to neighbors of a face
+    def B(self,face,hashed=False):
+
+        if not hashed:
+            face=self.makeHash(face)
 
         indicies=""
 
@@ -195,31 +234,11 @@ class Torus:
         self.hamiltonian=PauliSumOp(SparsePauliOp([2*(self.N**2)*"I"],[0]))
 
         for vertex in self.verticies:
-            self.hamiltonian=self.hamiltonian-self.A(vertex)
+            self.hamiltonian=self.hamiltonian-self.A(vertex,hashed=True)
         
         for face in self.faces:
-            self.hamiltonian=self.hamiltonian-self.B(face)
+            self.hamiltonian=self.hamiltonian-self.B(face,hashed=True)
     
-    #Get the eigenstates and eigenvalues, stored in self.eigenvalues and self.eigenstates
-    def makeEigenstatesNaive(self):
-
-        mat=self.hamiltonian.to_matrix()
-
-        data=np.linalg.eig(mat)
-
-        self.eigenvalues=np.round(data[0])
-        self.eigenstates=np.transpose(data[1])
-  
-    #Get the first k eigenstates and eigenvalues, stored in self.eigenvalues and self.eigenstates
-    def makeSparseEigenstatesNaive(self,k):
-
-        mat=self.hamiltonian.to_spmatrix()
-
-        data=eigs(mat,k=k)
-
-        self.eigenvalues=np.round(data[0])
-        self.eigenstates=np.transpose(data[1])
-
     #Print a (pure) state vector in a reasonable format
     def printPureState(self,ket):
         pretty=""
