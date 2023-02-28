@@ -19,15 +19,11 @@ import matplotlib.pyplot as plt
 #Main "Torus" class
 class Torus:
     #Initialize the Torus
-    def __init__(self,subdivisions=3,eigenstates=[],eigenvalues=[],eigenMW=[]):
+    def __init__(self,subdivisions=3,eigenstates=[]):
         
         self.N = subdivisions
 
         self.eigenstates=eigenstates
-
-        self.eigenvalues=eigenvalues
-
-        self.eigenMW=eigenMW
 
         self.verticies = [
             self.makeHash([(i,j)])
@@ -58,6 +54,11 @@ class Torus:
 
         for edge in self.edges:
             self.state.add_register(QuantumRegister(1,edge))
+
+        self.makeHamiltonian()
+
+        self.loadEigenData("CSVs/groundEigenvalues.csv",
+                "CSVs/groundEigenstates.csv")
 
     #Get the neighboring edges of a vertex        
     def vertexNeighbors(self,vertex):
@@ -188,7 +189,6 @@ class Torus:
         
         return PauliSumOp(SparsePauliOp([indicies],[1]))
     
-
     #Make the hamiltonian of the torus, stored in self.hamiltonian
     def makeHamiltonian(self):
 
@@ -220,18 +220,6 @@ class Torus:
         self.eigenvalues=np.round(data[0])
         self.eigenstates=np.transpose(data[1])
 
-    #Compute the Mayer-Wallash entropy of a state ket
-    def MW(self,ket):
-        N=int(np.log2(len(ket)))
-        ket = qutip.Qobj(ket, dims=[[2]*(N), [1]*(N)]).unit()
-        entanglement_sum = 0
-        for k in range(N):
-            rho_k_sq = ket.ptrace([k])**2
-            entanglement_sum += rho_k_sq.tr()  
-    
-        Q = 2*(1 - (1/N)*entanglement_sum)
-        return Q
-    
     #Print a (pure) state vector in a reasonable format
     def printPureState(self,ket):
         pretty=""
@@ -293,50 +281,26 @@ class Torus:
             else:
                 values[val]+=1
         return values
-    
-    #Plot data
-    def plotEigendata(self):
-    
-        for eigenval in sorted(list(set(self.eigenvalues)),reverse=True):
-            data=[self.eigenMW[i] for i in range(len(self.eigenvalues)) if self.eigenvalues[i]==eigenval]
-            print(str(eigenval)+": "+str(len(data)))
-            plt.plot(data, np.zeros_like(data)+eigenval, 'x',label="Eigenvalue "+str(int(eigenval)))
-        
-        plt.legend()
-        plt.show()
-
-    #Save data
-    def saveEigenData(self, eigenvalueCSV, eigenstateCSV):
-
-        with open(eigenvalueCSV,"w") as f:
-
-            writer = csv.writer(f)
-
-            for eigenvalue in self.eigenvalues:
-                writer.writerow([eigenvalue])
-
-        with open(eigenstateCSV,"w") as f:
-
-            writer = csv.writer(f)
-
-            for eigenstate in self.eigenstates:
-                writer.writerow(eigenstate)
-        
+      
     #Load data
-    def loadEigenData(self, eigenvalueCSV,eigenstateCSV):
+    def loadEigenData(self,eigenstateCSV):
 
-        with open(eigenvalueCSV,"r") as f:
-
-            reader = csv.reader(f)
-
-            for eigenvalue in reader:
-                self.eigenvalues+=[int(np.real(complex(eigenvalue[0])))]
+        eigenstates=[]
 
         with open(eigenstateCSV,"r") as f:
 
             reader = csv.reader(f)
 
             for eigenstate in reader:
-                self.eigenstates+=[[complex(eigenstate[i]) for i in range(len(eigenstate))]]
+                eigenstates+=[[complex(eigenstate[i]) for i in range(len(eigenstate))]]
+
+        self.ground={}
+        self.ground["0"]=eigenstates[0]
+        self.ground["alpha"]=eigenstates[1]
+        self.ground["beta"]=eigenstates[2]
+        self.ground["alphabeta"]=eigenstates[3]
+
+        
+
         
 

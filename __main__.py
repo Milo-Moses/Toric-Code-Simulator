@@ -7,8 +7,7 @@ import time
 
 T = Torus()
 
-T.loadEigenData("Toric-Codes-Simulator/CSVs/groundEigenvalues.csv",
-                "Toric-Codes-Simulator/CSVs/groundEigenstates.csv")
+T.loadEigenData("Toric-Codes-Simulator/CSVs/groundEigenstates.csv")
 
 
 T.printState(T.eigenstates[1])
